@@ -2,6 +2,7 @@
 """BioPython-based FASTA processing for GeneWeaver."""
 
 from Bio import SeqIO
+from geneweaver.encoding import encode
 
 
 def clean_sequence(sequence):
@@ -47,5 +48,22 @@ def process_genome(file_path, chunk_size=10000):
 
     for name, sequence in genome.items():
         processed[name] = chunk_sequence(sequence, chunk_size)
+
+    return processed
+def process_genome_as_arrays(file_path, chunk_size=10000):
+    """Read, clean, encode, and chunk genome records as NumPy arrays."""
+    if chunk_size <= 0:
+        raise ValueError("Chunk size must be greater than zero.")
+
+    genome = read_genome_fasta(file_path)
+    processed = {}
+
+    for name, sequence in genome.items():
+        encoded_sequence = encode(sequence)
+
+        processed[name] = [
+            encoded_sequence[i:i + chunk_size]
+            for i in range(0, len(encoded_sequence), chunk_size)
+        ]
 
     return processed

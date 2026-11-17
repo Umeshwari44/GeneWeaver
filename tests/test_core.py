@@ -176,3 +176,11 @@ def test_cli_end_to_end(tmp_path, capsys):
     assert main(["demo", "--length", "50000", "--cpu"]) == 0
     assert "all recovered" in capsys.readouterr().out
     assert main(["search", "--genome", "nope.fa", "--guides", d + "/sample_guides.txt", "--cpu"]) == 2
+def test_mit_off_target_score_invalid_low_position():
+    with pytest.raises(ValueError):
+        mit_off_target_score([0])
+
+
+def test_mit_off_target_score_invalid_high_position():
+    with pytest.raises(ValueError):
+        mit_off_target_score([21])

@@ -1,3 +1,4 @@
+
 """Off-target scoring.
 
 Implements the MIT off-target score (Hsu et al., Nature Biotechnology 2013) as used
@@ -21,18 +22,33 @@ MIT_WEIGHTS = [
 def mit_off_target_score(mm_positions: Sequence[int]) -> float:
     """Score in [0, 100] for one site. `mm_positions` are 1-based (1 = 5' end).
     100 = perfect match; lower = less likely to be cleaved."""
+
     n = len(mm_positions)
+
     if n == 0:
         return 100.0
+
+    if any(
+        not isinstance(p, int) or isinstance(p, bool) or p < 1 or p > 20
+        for p in mm_positions
+    ):
+        raise ValueError(
+            "Mismatch positions must be integers between 1 and 20."
+        )
+
     pos = sorted(p - 1 for p in mm_positions)
     prod = 1.0
+
     for p in pos:
         prod *= 1.0 - MIT_WEIGHTS[p]
+
     if n > 1:
         mean_dist = (pos[-1] - pos[0]) / (n - 1)
     else:
         mean_dist = 19.0
+
     dist_factor = 1.0 / (((19.0 - mean_dist) / 19.0) * 4.0 + 1.0)
+
     return 100.0 * prod * dist_factor / (n * n)
 
 

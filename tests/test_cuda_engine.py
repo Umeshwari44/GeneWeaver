@@ -66,3 +66,26 @@ def test_empty_sequences():
 
     with pytest.raises(ValueError, match="cannot be empty"):
         count_mismatches(guides, sites)
+
+def test_negative_dna_encoding():
+    guides = np.array([[-1, 1, 2, 3]])
+    sites = np.array([[0, 1, 2, 3]])
+
+    with pytest.raises(ValueError, match="between 0 and 4"):
+        count_mismatches(guides, sites)
+
+
+def test_encoding_above_four():
+    guides = np.array([[0, 1, 2, 5]])
+    sites = np.array([[0, 1, 2, 3]])
+
+    with pytest.raises(ValueError, match="between 0 and 4"):
+        count_mismatches(guides, sites)
+
+
+def test_non_integer_encoding():
+    guides = np.array([[0.0, 1.0, 2.0, 3.0]])
+    sites = np.array([[0, 1, 2, 3]])
+
+    with pytest.raises(ValueError, match="must contain integers"):
+        count_mismatches(guides, sites)

@@ -6,9 +6,6 @@ and scores how risky each site is. The heavy part of the search is turned into a
 single matrix multiplication, so it runs on a **GPU** (via CuPy) when one is available
 and falls back automatically to NumPy on CPU.
 
-> Infotact Solutions - Python Development internship, Project 2
-> (Ref. ITS/PY/1445)
-
 ## Features
 
 - Scans both strands of every contig in a (multi-)FASTA genome (`.fa`, `.fasta`, `.gz`)

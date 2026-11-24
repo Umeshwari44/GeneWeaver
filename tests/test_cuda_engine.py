@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from geneweaver.cuda_engine import count_mismatches
+from geneweaver.cuda_engine import count_mismatches, count_mismatches_matrix
 
 
 def test_count_mismatches():
@@ -89,3 +89,53 @@ def test_non_integer_encoding():
 
     with pytest.raises(ValueError, match="must contain integers"):
         count_mismatches(guides, sites)
+
+
+
+def test_count_mismatches_matrix():
+    guides = np.array([
+        [0, 1, 2, 3],
+        [0, 0, 0, 0]
+    ])
+
+    sites = np.array([
+        [0, 1, 2, 3],
+        [1, 1, 0, 2],
+        [0, 0, 0, 0]
+    ])
+
+    result = count_mismatches_matrix(guides, sites)
+
+    expected = np.array([
+        [0, 3, 3],
+        [3, 3, 0]
+    ])
+
+    np.testing.assert_array_equal(result, expected)
+
+
+def test_count_mismatches_matrix_empty_guides():
+    guides = np.empty((0, 4), dtype=np.uint8)
+    sites = np.array([[0, 1, 2, 3]])
+
+    result = count_mismatches_matrix(guides, sites)
+
+    assert result.shape == (0, 1)
+
+
+def test_count_mismatches_matrix_empty_sites():
+    guides = np.array([[0, 1, 2, 3]])
+    sites = np.empty((0, 4), dtype=np.uint8)
+
+    result = count_mismatches_matrix(guides, sites)
+
+    assert result.shape == (1, 0)
+
+
+def test_count_mismatches_matrix_different_lengths():
+    guides = np.array([[0, 1, 2, 3]])
+    sites = np.array([[0, 1, 2]])
+
+    with pytest.raises(ValueError, match="same sequence length"):
+        count_mismatches_matrix(guides, sites)
+

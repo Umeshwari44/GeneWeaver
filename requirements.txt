@@ -3,3 +3,4 @@ pytest>=7.0
 # Optional GPU acceleration (choose the wheel matching your CUDA version):
 # cupy-cuda12x
 biopython>=1.88
+dask[distributed]>=2026.11.0

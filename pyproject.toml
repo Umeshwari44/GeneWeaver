@@ -7,8 +7,8 @@ name = "geneweaver"
 version = "0.1.0"
 description = "GPU-accelerated CRISPR alignment (off-target search) engine"
 readme = "README.md"
-requires-python = ">=3.9"
-dependencies = ["numpy>=1.24"]
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "biopython>=1.88", "dask[distributed]>=2026.11.0"]
 
 [project.optional-dependencies]
 gpu = ["cupy-cuda12x"]

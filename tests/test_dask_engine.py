@@ -50,3 +50,31 @@ def test_distributed_invalid_worker_count(tmp_path):
 
     with pytest.raises(ValueError):
         process_genome_distributed(fasta_file, n_workers=0)
+
+
+def test_distributed_unknown_dna_bases(tmp_path):
+    fasta_file = tmp_path / "test.fa"
+    fasta_file.write_text(">chr1\nACNT\n")
+
+    result = process_genome_distributed(
+        fasta_file,
+        chunk_size=4,
+        n_workers=1
+    )
+
+    assert result["chr1"][0].tolist() == [0, 1, 4, 3]
+
+
+def test_distributed_chunk_with_remainder(tmp_path):
+    fasta_file = tmp_path / "test.fa"
+    fasta_file.write_text(">chr1\nACGTACG\n")
+
+    result = process_genome_distributed(
+        fasta_file,
+        chunk_size=4,
+        n_workers=1
+    )
+
+    assert len(result["chr1"]) == 2
+    assert result["chr1"][0].tolist() == [0, 1, 2, 3]
+    assert result["chr1"][1].tolist() == [0, 1, 2]

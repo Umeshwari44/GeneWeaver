@@ -67,3 +67,14 @@ def test_process_genome_as_arrays_invalid_chunk_size(tmp_path):
 
     with pytest.raises(ValueError):
         process_genome_as_arrays(fasta_file, chunk_size=0)
+
+def test_process_genome_as_arrays_multiple_contigs(tmp_path):
+    fasta_file = tmp_path / "multiple.fa"
+    fasta_file.write_text(">chr1\nACGTAC\n>chr2\nTTNAA\n")
+
+    result = process_genome_as_arrays(fasta_file, chunk_size=4)
+
+    assert result["chr1"][0].tolist() == [0, 1, 2, 3]
+    assert result["chr1"][1].tolist() == [0, 1]
+    assert result["chr2"][0].tolist() == [3, 3, 4, 0]
+    assert result["chr2"][1].tolist() == [0]

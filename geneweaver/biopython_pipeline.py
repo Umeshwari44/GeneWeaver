@@ -1,4 +1,3 @@
-
 """BioPython-based FASTA processing for GeneWeaver."""
 
 from Bio import SeqIO
@@ -50,20 +49,30 @@ def process_genome(file_path, chunk_size=10000):
         processed[name] = chunk_sequence(sequence, chunk_size)
 
     return processed
+
+
 def process_genome_as_arrays(file_path, chunk_size=10000):
-    """Read, clean, encode, and chunk genome records as NumPy arrays."""
+    """Read and encode FASTA records individually to reduce memory overhead."""
     if chunk_size <= 0:
         raise ValueError("Chunk size must be greater than zero.")
 
-    genome = read_genome_fasta(file_path)
     processed = {}
 
-    for name, sequence in genome.items():
+    for record in SeqIO.parse(file_path, "fasta"):
+        name = record.id
+        sequence = clean_sequence(record.seq)
+
+        if not sequence:
+            raise ValueError(f"Empty sequence found: {name}")
+
         encoded_sequence = encode(sequence)
 
         processed[name] = [
             encoded_sequence[i:i + chunk_size]
             for i in range(0, len(encoded_sequence), chunk_size)
         ]
+
+    if not processed:
+        raise ValueError("No FASTA records found.")
 
     return processed
